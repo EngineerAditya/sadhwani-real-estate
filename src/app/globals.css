@@ -1,26 +1,155 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fcf9f5;
+  --foreground: #1a1a1a;
+  --primary: #8b0000;
+  --secondary: #d4af37;
+  --deep-black: #0a0a0a;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-surface: var(--background);
+  --color-on-surface: var(--foreground);
+  --color-on-surface-variant: #4a4a4a;
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-deep-black: var(--deep-black);
+  --color-outline: rgba(139, 0, 0, 0.125);
+  
+  --font-headline: var(--font-headline), serif;
+  --font-body: var(--font-body), sans-serif;
+  --font-label: var(--font-label), sans-serif;
+
+  --radius-default: 0.125rem;
+  --radius-lg: 0.25rem;
+  --radius-xl: 0.5rem;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (min-width: 640px) {
+    html {
+      cursor: none; /* Hide default cursor for CustomCursor on desktop */
+    }
+  }
+  
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Grain Texture Overlay */
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("https://www.transparenttextures.com/patterns/natural-paper.png");
+    opacity: 0.15;
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  ::selection {
+    background-color: var(--primary);
+    color: white;
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--background);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 3px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  /* Dynamic Reveals */
+  .reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    filter: blur(10px);
+    transition: all 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  
+  .reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+
+  .reveal-mask {
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path 1.5s cubic-bezier(0.77, 0, 0.175, 1);
+  }
+
+  .reveal-mask.active {
+    clip-path: inset(0 0 0 0);
+  }
+
+  .reveal-stagger > * {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .reveal-stagger.active > * {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Stagger Delays */
+  .reveal-stagger.active > *:nth-child(1) { transition-delay: 0.1s; }
+  .reveal-stagger.active > *:nth-child(2) { transition-delay: 0.2s; }
+  .reveal-stagger.active > *:nth-child(3) { transition-delay: 0.3s; }
+  .reveal-stagger.active > *:nth-child(4) { transition-delay: 0.4s; }
+
+  /* Ken Burns Effect */
+  @keyframes ken-burns {
+    from { transform: scale(1); }
+    to { transform: scale(1.1); }
+  }
+
+  .animate-ken-burns {
+    animation: ken-burns 20s ease-in-out infinite alternate;
+  }
+
+  /* Sketch Border Draw */
+  .sketch-draw {
+    position: relative;
+  }
+  .sketch-draw::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: 1px solid var(--primary);
+    clip-path: inset(0 100% 100% 0);
+    transition: clip-path 0.6s ease-in-out;
+  }
+  .sketch-draw:hover::after {
+    clip-path: inset(0 0 0 0);
+  }
+
+  /* 3D Tilt Card */
+  .tilt-card {
+    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .tilt-card:hover {
+    transform: perspective(1000px) rotateX(2deg) rotateY(-2deg) scale(1.02);
+  }
 }
